@@ -1,0 +1,19 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package com.alertysense.pubsub.client;
+
+service PublisherService {
+    rpc publishMessage(Message) returns (Message) {}
+}
+
+message Message {
+    // TODO: message should be a byte array instead of string because it can be json, xml, etc.
+    string message = 1;
+    string topic = 2;
+    string publisher = 3;
+}
+
+message Response {
+    string response = 1;
+    bool status = 2;
+}
