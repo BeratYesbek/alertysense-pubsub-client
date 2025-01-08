@@ -1,5 +1,7 @@
 package com.alertysense.alertysensepubsubclient;
 
+import com.alertysense.pubsub.client.Message;
+import com.alertysense.pubsub.client.PublisherServiceGrpc;
 import com.alertysense.pubsub.client.Response;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
@@ -14,6 +16,8 @@ public abstract class AlertySensePubSubClient {
     private final String host;
     private final Integer port;
     ManagedChannel managedChannel;
+    private PublisherServiceGrpc.PublisherServiceFutureStub publisherServiceFutureStub;
+
 
     protected AlertySensePubSubClient(String host, Integer port) throws Exception {
         this.host = host;
@@ -30,9 +34,11 @@ public abstract class AlertySensePubSubClient {
 
     }
 
-    public Response publishMessage(String message, String topic) {
+    public Response publish(String message, String topic) throws Exception {
         try {
-            // Publish message to the topic
+            publisherServiceFutureStub = PublisherServiceGrpc.newFutureStub(managedChannel);
+            publisherServiceFutureStub.publishMessage(Message.newBuilder().setMessage(message).setTopic(topic).build());
+
             return null;
         } catch (Exception e) {
             return null;
