@@ -3,6 +3,7 @@ package com.alertysense.alertysensepubsubclient;
 import com.alertysense.pubsub.client.Message;
 import com.alertysense.pubsub.client.PublisherServiceGrpc;
 import com.alertysense.pubsub.client.Response;
+import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -37,11 +38,11 @@ public abstract class AlertySensePubSubClient {
     public Response publish(String message, String topic) throws Exception {
         try {
             publisherServiceFutureStub = PublisherServiceGrpc.newFutureStub(managedChannel);
-            publisherServiceFutureStub.publishMessage(Message.newBuilder().setMessage(message).setTopic(topic).build());
-
-            return null;
+            ListenableFuture<Response> future = publisherServiceFutureStub.publishMessage(Message.newBuilder().setMessage(message).setTopic(topic).build());
+            return future.get();
         } catch (Exception e) {
-            return null;
+            log.error("Failed to publish message to the server");
+            throw new Exception("Failed to publish message to the server");
         }
 
     }
